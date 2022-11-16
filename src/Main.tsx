@@ -19,7 +19,7 @@ const Main: React.FunctionComponent = (): JSX.Element => {
 
   const itemsPerPage = 5
   const octokit = new Octokit.Octokit({
-    auth: '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'
+    auth: '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'
   })
 
   React.useEffect(() => {
