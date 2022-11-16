@@ -1,12 +1,10 @@
 import * as React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import { AppContext } from './context'
 import * as Octokit from 'octokit'
 import SearchForm from './Components/SearchForm'
 import PaginatedItems from './Components/PaginatedItems'
 import LanguageList from './Components/LanguageList'
 
-// https://octokit.github.io/rest.js/v19
+// DOC: https://octokit.github.io/rest.js/v19
 
 const Main: React.FunctionComponent = (): JSX.Element => {
 
@@ -21,7 +19,7 @@ const Main: React.FunctionComponent = (): JSX.Element => {
 
   const itemsPerPage = 5
   const octokit = new Octokit.Octokit({
-    auth: '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'
+    auth: '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'
   })
 
   React.useEffect(() => {
@@ -101,48 +99,33 @@ const Main: React.FunctionComponent = (): JSX.Element => {
   }
 
   const getPublicRepositories = async () => await octokit.rest.repos.listPublic()
-
   const getRepositoriesByUser = async () => await octokit.rest.repos.listForUser({ username })
 
   return (
-    <AppContext.Provider value={{}}>
-      <AppContext.Consumer>
-        {(context) => ((
-          <BrowserRouter>
-            <Switch>
-              <Route exact path="/">
-                <main>
+    <main>
+      <div className='m-2 p-2'>
 
-                  <div className='m-2 p-2'>
+        <SearchForm onSearch={onSearch} searchRef={searchRef} />
 
-                    <SearchForm onSearch={onSearch} searchRef={searchRef} />
+        <div className='mt-2'>
+          {
+            state !== 'loading'
+              ? (
+                <>
+                  <LanguageList languageList={languageList} languageListSelected={languageListSelected} onClick={onLanguageSelected} languageListSelectedRef={languageListSelectedRef} />
+                  <PaginatedItems repositoryList={repositoryList} itemsPerPage={itemsPerPage} />
+                </>
+              )
+              : (
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              )
+          }
 
-                    <div className='mt-2'>
-                      {
-                        state !== 'loading'
-                          ? (
-                            <>
-                              <LanguageList languageList={languageList} languageListSelected={languageListSelected} onClick={onLanguageSelected} languageListSelectedRef={languageListSelectedRef} />
-                              <PaginatedItems repositoryList={repositoryList} itemsPerPage={itemsPerPage} />
-                            </>
-                          )
-                          : (
-                            <div className="spinner-border text-primary" role="status">
-                              <span className="visually-hidden">Loading...</span>
-                            </div>
-                          )
-                      }
-
-                    </div>
-
-                  </div>
-                </main>
-              </Route>
-            </Switch>
-          </BrowserRouter>
-        ))}
-      </AppContext.Consumer>
-    </AppContext.Provider>
+        </div>
+      </div>
+    </main>
   )
 }
 
