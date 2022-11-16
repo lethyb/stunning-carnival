@@ -4,15 +4,6 @@ object-assign
 @license MIT
 */
 
-/*!
- * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-/*! fromentries. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
-
 /** @license React v0.20.1
  * scheduler.production.min.js
  *

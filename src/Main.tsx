@@ -1,16 +1,14 @@
 import * as React from 'react'
-import * as Octokit from 'octokit'
+import axios from 'axios'
 import SearchForm from './Components/SearchForm'
 import PaginatedItems from './Components/PaginatedItems'
 import LanguageList from './Components/LanguageList'
-
-// DOC: https://octokit.github.io/rest.js/v19
 
 const Main: React.FunctionComponent = (): JSX.Element => {
 
   const [state, setState] = React.useState('')
   const [repositoryList, setRepositoryList]: any[] = React.useState([])
-  const [username, setUsername] = React.useState('')
+  const [username, setUsername] = React.useState('lethyb')
   const [languageList, setLanguageList]: any[] = React.useState([])
   const [languageListSelected, setLanguageListSelected]: any[] = React.useState([])
 
@@ -18,22 +16,10 @@ const Main: React.FunctionComponent = (): JSX.Element => {
   const languageListSelectedRef = React.useRef<any>()
 
   const itemsPerPage = 5
-  const octokit = new Octokit.Octokit({
-    auth: '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'
-  })
 
   React.useEffect(() => {
 
     setState('loading')
-
-    if (username === '') {
-      setLanguageListState([])
-      getPublicRepositories().then((response) => {
-        setRepositoryList(response.data)
-        setState('')
-      })
-      return
-    }
 
     getRepositoriesByUser().then((response) => {
       const repositoryListFiltered = filterRepositoryListByLanguageList(response.data)
@@ -50,7 +36,7 @@ const Main: React.FunctionComponent = (): JSX.Element => {
     const languageList: string[] = []
 
     repositoryList.forEach((repository: any) => {
-      if (repository.language) {
+      if (repository.language && !languageList.includes(repository.language)) {
         languageList.push(repository.language)
       }
     })
@@ -98,8 +84,7 @@ const Main: React.FunctionComponent = (): JSX.Element => {
     setLanguageListSelected(filterList)
   }
 
-  const getPublicRepositories = async () => await octokit.rest.repos.listPublic()
-  const getRepositoriesByUser = async () => await octokit.rest.repos.listForUser({ username })
+  const getRepositoriesByUser = () => axios.get('https://api.github.com/users/' + username + '/repos')
 
   return (
     <main>
