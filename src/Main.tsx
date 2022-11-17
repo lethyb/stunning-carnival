@@ -34,9 +34,6 @@ const Main: React.FunctionComponent = (): JSX.Element => {
   }, [username])
 
   React.useEffect(() => {
-  }, [languageList])
-
-  React.useEffect(() => {
     const repositoryListFiltered = filterRepositoryListByLanguageList(repositoryList)
     setRepositoryListFiltered(repositoryListFiltered)
   }, [languageListSelected])
