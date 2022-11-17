@@ -25,11 +25,22 @@ function PaginatedItems(props: PaginatedItemsProps): JSX.Element {
       <Items currentItems={currentItems} repositoryList={props.repositoryList} />
       <ReactPaginate
         breakLabel="..."
-        nextLabel="next >"
+        nextLabel="Next >"
         onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
+        pageRangeDisplayed={props.itemsPerPage}
         pageCount={pageCount}
-        previousLabel="< previous"
+        previousLabel="< Previous"
+        containerClassName='pagination mt-3'
+        pageClassName='page-item'
+        activeClassName='active'
+        pageLinkClassName='page-link'
+        activeLinkClassName='active'
+        previousClassName='page-item'
+        previousLinkClassName='page-link'
+        nextClassName='page-item'
+        nextLinkClassName='page-link'
+        disabledClassName='disabled'
+        disabledLinkClassName='disabled'
       />
     </>
   )

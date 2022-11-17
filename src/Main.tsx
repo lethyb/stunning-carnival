@@ -4,32 +4,42 @@ import SearchForm from './Components/SearchForm'
 import PaginatedItems from './Components/PaginatedItems'
 import LanguageList from './Components/LanguageList'
 
+const DEFAULT_USER_NAME = 'octocat'
+const ITEMS_PER_PAGE = 5
+const SEARCH_ON_KEY_PRESS = 13
+
 const Main: React.FunctionComponent = (): JSX.Element => {
 
-  const [state, setState] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
   const [repositoryList, setRepositoryList]: any[] = React.useState([])
-  const [username, setUsername] = React.useState('lethyb')
+  const [repositoryListFiltered, setRepositoryListFiltered]: any[] = React.useState([])
+  const [username, setUsername] = React.useState(DEFAULT_USER_NAME)
   const [languageList, setLanguageList]: any[] = React.useState([])
   const [languageListSelected, setLanguageListSelected]: any[] = React.useState([])
 
   const searchRef = React.useRef<any>()
   const languageListSelectedRef = React.useRef<any>()
 
-  const itemsPerPage = 5
-
   React.useEffect(() => {
 
-    setState('loading')
+    setIsLoading(true)
 
     getRepositoriesByUser().then((response) => {
-      const repositoryListFiltered = filterRepositoryListByLanguageList(response.data)
-      const repositoryListSorted = sortRepositoryListByStargazersCount(repositoryListFiltered)
-      setLanguageListState(response.data)
+      const repositoryListSorted = sortRepositoryListByStargazersCount(response.data)
       setRepositoryList(repositoryListSorted)
-      setState('')
+      setLanguageListState(repositoryListSorted)
+      setLanguageListSelected([])
+      setIsLoading(false)
     })
-  }, [username, languageListSelected]);
+  }, [username])
 
+  React.useEffect(() => {
+  }, [languageList])
+
+  React.useEffect(() => {
+    const repositoryListFiltered = filterRepositoryListByLanguageList(repositoryList)
+    setRepositoryListFiltered(repositoryListFiltered)
+  }, [languageListSelected])
 
   const setLanguageListState = (repositoryList: any[]) => {
 
@@ -67,8 +77,15 @@ const Main: React.FunctionComponent = (): JSX.Element => {
   }
 
   const onSearch = (event: any) => {
-    const user = searchRef.current ? searchRef.current.value : ''
+    const user = searchRef.current.value || DEFAULT_USER_NAME
     setUsername(user)
+  }
+
+  const onSearchKeyPress = (event: any) => {
+    if (event.charCode === SEARCH_ON_KEY_PRESS) {
+      onSearch(event)
+      searchRef.current.blur()
+    }
   }
 
   const onLanguageSelected = (event: any) => {
@@ -90,15 +107,15 @@ const Main: React.FunctionComponent = (): JSX.Element => {
     <main>
       <div className='m-2 p-2'>
 
-        <SearchForm onSearch={onSearch} searchRef={searchRef} />
+        <SearchForm onSearch={onSearch} onKeyPress={onSearchKeyPress} searchRef={searchRef} />
 
         <div className='mt-2'>
           {
-            state !== 'loading'
+            !isLoading
               ? (
                 <>
                   <LanguageList languageList={languageList} languageListSelected={languageListSelected} onClick={onLanguageSelected} languageListSelectedRef={languageListSelectedRef} />
-                  <PaginatedItems repositoryList={repositoryList} itemsPerPage={itemsPerPage} />
+                  <PaginatedItems repositoryList={repositoryListFiltered} itemsPerPage={ITEMS_PER_PAGE} />
                 </>
               )
               : (
