@@ -3,6 +3,7 @@ import axios from 'axios'
 import SearchForm from './Components/SearchForm'
 import PaginatedItems from './Components/PaginatedItems'
 import LanguageList from './Components/LanguageList'
+import Profile from './Components/Profile'
 
 const DEFAULT_USER_NAME = 'octocat'
 const ITEMS_PER_PAGE = 5
@@ -14,6 +15,7 @@ const Main: React.FunctionComponent = (): JSX.Element => {
   const [repositoryList, setRepositoryList]: any[] = React.useState([])
   const [repositoryListFiltered, setRepositoryListFiltered]: any[] = React.useState([])
   const [username, setUsername] = React.useState(DEFAULT_USER_NAME)
+  const [user, setUser] = React.useState(null)
   const [languageList, setLanguageList]: any[] = React.useState([])
   const [languageListSelected, setLanguageListSelected]: any[] = React.useState([])
 
@@ -24,13 +26,20 @@ const Main: React.FunctionComponent = (): JSX.Element => {
 
     setIsLoading(true)
 
-    getRepositoriesByUser().then((response) => {
-      const repositoryListSorted = sortRepositoryListByStargazersCount(response.data)
-      setRepositoryList(repositoryListSorted)
-      setLanguageListState(repositoryListSorted)
-      setLanguageListSelected([])
-      setIsLoading(false)
-    })
+    getRepositoriesByUser()
+      .then((response) => {
+        const repositoryListSorted = sortRepositoryListByStargazersCount(response.data)
+        setRepositoryList(repositoryListSorted)
+        setUserFromRepositoryList(repositoryListSorted)
+        setLanguageListState(repositoryListSorted)
+        setLanguageListSelected([])
+        setIsLoading(false)
+      })
+      .catch((error: any) => {
+        alert(error.message)
+        searchRef.current.value = ''
+        setUsername(DEFAULT_USER_NAME)
+      })
   }, [username])
 
   React.useEffect(() => {
@@ -49,6 +58,15 @@ const Main: React.FunctionComponent = (): JSX.Element => {
     })
 
     setLanguageList(languageList)
+  }
+
+  const setUserFromRepositoryList = (repositoryList: any[]) => {
+    for (let i = 0; i < repositoryList.length; i++) {
+      if (repositoryList[i].owner) {
+        setUser(repositoryList[i].owner)
+        break
+      }
+    }
   }
 
   const filterRepositoryListByLanguageList = (repositoryList: any[]) => {
@@ -104,6 +122,7 @@ const Main: React.FunctionComponent = (): JSX.Element => {
     <main>
       <div className='m-2 p-2'>
 
+        <Profile user={user}/>
         <SearchForm onSearch={onSearch} onKeyPress={onSearchKeyPress} searchRef={searchRef} />
 
         <div className='mt-2'>
@@ -112,7 +131,7 @@ const Main: React.FunctionComponent = (): JSX.Element => {
               ? (
                 <>
                   <LanguageList languageList={languageList} languageListSelected={languageListSelected} onClick={onLanguageSelected} languageListSelectedRef={languageListSelectedRef} />
-                  <PaginatedItems repositoryList={repositoryListFiltered} itemsPerPage={ITEMS_PER_PAGE} />
+                  <PaginatedItems repositoryList={repositoryListFiltered} itemsPerPage={ITEMS_PER_PAGE} username={username} />
                 </>
               )
               : (

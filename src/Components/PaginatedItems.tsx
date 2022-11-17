@@ -5,6 +5,7 @@ import Items from './Items';
 interface PaginatedItemsProps {
   itemsPerPage: number
   repositoryList: any[]
+  username: string
 }
 
 function PaginatedItems(props: PaginatedItemsProps): JSX.Element {
@@ -22,7 +23,7 @@ function PaginatedItems(props: PaginatedItemsProps): JSX.Element {
 
   return (
     <>
-      <Items currentItems={currentItems} repositoryList={props.repositoryList} />
+      <Items currentItems={currentItems} repositoryList={props.repositoryList} username={props.username}/>
       <ReactPaginate
         breakLabel="..."
         nextLabel="Next >"
