@@ -18,5 +18,3 @@ restart:
 
 upy:
 	docker-compose run react yarn
-
-#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
