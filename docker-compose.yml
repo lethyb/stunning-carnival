@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+    react:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        volumes:
+            - ./:/react
+        networks:
+            - stunning-carnival
+        ports:
+            - "8181:8181"
+        command: yarn run start
+
+networks:
+    stunning-carnival:
+        driver: bridge
+

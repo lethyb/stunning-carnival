@@ -1,0 +1,1 @@
+module.exports = (args) => require(`./webpack.config.${args.env}.js`);
